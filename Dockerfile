@@ -4,9 +4,8 @@
 #  C / C++ / Python2 / Python3 / PHP / Golang / NodeJS
 # ==================================================================
 
-ARG BASE_IMAGE=
 
-FROM ${BASE_IMAGE}
+FROM ubuntu:18.04
 
 LABEL maintainer.name="xczh" \
       maintainer.email="xczh.me@foxmail.com" \
@@ -166,22 +165,22 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
 # ------------------------------------------------------------------
 
     $GIT_CLONE https://github.com/c9/core.git /cloud9 && \
-    /cloud9/scripts/install-sdk.sh && \
+    /cloud9/scripts/install-sdk.sh 
 
 # ==================================================================
 # c9-codeintel
 # see: https://github.com/c9/c9.ide.language.codeintel
 # ------------------------------------------------------------------
 
-    virtualenv --python=python2 /root/.c9/python2 && \
+RUN virtualenv --python=python2 /root/.c9/python2 && \
     . /root/.c9/python2/bin/activate && \
-    mkdir /tmp/codeintel && \
-    pip download -d /tmp/codeintel codeintel==0.9.3 && \
-    cd /tmp/codeintel && \
-    tar xf CodeIntel-0.9.3.tar.gz && \
-    mv CodeIntel-0.9.3/SilverCity CodeIntel-0.9.3/silvercity && \
-    tar -zcf CodeIntel-0.9.3.tar.gz CodeIntel-0.9.3 && \
-    pip install -U --no-index --find-links=/tmp/codeintel codeintel && \
+    #mkdir /tmp/codeintel && \
+    #pip download -d /tmp/codeintel codeintel==2.0.0 && \
+    #cd /tmp/codeintel && \
+    #tar xf CodeIntel-2.0.0.tar.gz && \
+    #mv CodeIntel-2.0.0/SilverCity CodeIntel-2.0.0/silvercity && \
+    #tar -zcf CodeIntel-2.0.0.tar.gz CodeIntel-2.0.0 && \
+    pip install -U inflector==2.0.12 && \
     deactivate && \
     cd /root && \
 
@@ -189,7 +188,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
 # openssh
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         openssh-server \
         && \
     mkdir /var/run/sshd && \
@@ -200,7 +199,7 @@ RUN APT_INSTALL="apt-get install -y --no-install-recommends" && \
 # supervisor
 # ------------------------------------------------------------------
 
-    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         supervisor \
         && \
     sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' \
